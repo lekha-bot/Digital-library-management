@@ -1,6 +1,6 @@
 # Digital-library-management
 
-Backend Project 3: Digital Library System
+Backend Project: Digital Library System
 Objective:
 Build a backend system using Java, Spring Boot, and PostgreSQL to manage a digital library of books, authors, and borrow records.
 Key Requirements:
