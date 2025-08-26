@@ -7,7 +7,7 @@ import lombok.Data;
 import java.util.List;
 @Data
 @Entity
-@Table(name = "users") // 'user' is reserved keyword in PostgreSQL
+@Table(name = "users")
 public class User {
 
     @Id

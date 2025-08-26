@@ -10,6 +10,13 @@
     <include file="db/changelog/03-create-book.xml"/>
     <include file="db/changelog/04-create-resource.xml"/>
     <include file="db/changelog/05-create-borrow.xml"/>
+    <include file="db/changelog/01-create-user-audit.xml"/>
+    <include file="db/changelog/02-create-author-audit.xml"/>
+    <include file="db/changelog/03-create-book-audit.xml"/>
+    <include file="db/changelog/04-create-borrow-audit.xml"/>
+    <include file="db/changelog/05-create-resource-audit.xml"/>
+
+
 
 </databaseChangeLog>
 

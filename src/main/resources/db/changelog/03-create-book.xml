@@ -18,5 +18,10 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="add-available-to-book" author="lekha">
+        <addColumn tableName="book">
+            <column name="available" type="boolean" defaultValueBoolean="true"/>
+        </addColumn>
+    </changeSet>
 
 </databaseChangeLog>

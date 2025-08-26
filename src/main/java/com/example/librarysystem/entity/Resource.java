@@ -1,12 +1,12 @@
 package com.example.librarysystem.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "resources")
+@Table(name = "resource")
 public class Resource {
 
     @Id
@@ -16,11 +16,10 @@ public class Resource {
     private String type; // PDF, VIDEO
     private String url;  // link to resource
 
-    // Many resources can belong to one book
     @ManyToOne
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "book_id" , nullable = false)
+    @JsonBackReference   // 👈 avoids loop
     private Book book;
 
 
 }
-
