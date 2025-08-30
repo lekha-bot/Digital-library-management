@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <include file="db/changelog/01-create-author.xml"/>
+    <include file="db/changelog/02-create-user.xml"/>
+    <include file="db/changelog/03-create-book.xml"/>
+    <include file="db/changelog/04-create-resource.xml"/>
+    <include file="db/changelog/05-create-borrow.xml"/>
+    <changeSet id="add-resource-columns" author="lekha">
+        <addColumn tableName="resource">
+            <column name="resource_type" type="varchar(255)"/>
+            <column name="resource_url" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+
+
+
+
+
+</databaseChangeLog>
+
