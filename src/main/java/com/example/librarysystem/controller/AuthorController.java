@@ -2,6 +2,8 @@ package com.example.librarysystem.controller;
 
 import com.example.librarysystem.entity.Author;
 import com.example.librarysystem.repository.AuthorRepository;
+import com.example.librarysystem.service.AuthorService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,9 @@ import java.util.List;
 public class AuthorController {
 
     private final AuthorRepository authorRepository;
+
+    @Autowired
+    private AuthorService authorService;
 
     public AuthorController(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
@@ -59,13 +64,13 @@ public class AuthorController {
 
     // ✅ Delete Author
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteAuthor(@PathVariable Long id) {
-        return authorRepository.findById(id)
-                .map(author -> {
-                    authorRepository.delete(author);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<String> deleteAuthor(@PathVariable Long id) {
+        try {
+            authorService.deleteAuthor(id);
+            return ResponseEntity.ok("Author deleted successfully!");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }

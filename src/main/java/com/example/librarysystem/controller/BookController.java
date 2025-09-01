@@ -1,7 +1,6 @@
 package com.example.librarysystem.controller;
 
-import com.example.librarysystem.entity.Book;
-import com.example.librarysystem.repository.BookRepository;
+import com.example.librarysystem.dto.BookDto;
 import com.example.librarysystem.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,49 +14,20 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
-    private final BookRepository bookRepository; // for GET, DELETE
 
-    // ✅ Create Book
     @PostMapping
-    public Book createBook(@RequestBody Book book) {
-        return bookService.saveBook(book);
+    public ResponseEntity<BookDto> createBook(@RequestBody BookDto request) {
+        BookDto saved = bookService.createBook(request);
+        return ResponseEntity.ok(saved);
     }
 
-    // ✅ Get All Books
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        return ResponseEntity.ok(bookRepository.findAll());
+    public ResponseEntity<List<BookDto>> getAllBooks() {
+        return ResponseEntity.ok(bookService.getAllBooks());
     }
 
-    // ✅ Get Book by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getBookById(@PathVariable Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
-        return ResponseEntity.ok(book);
-    }
-
-    // ✅ Update Book
-    @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
-
-        existingBook.setTitle(bookDetails.getTitle());
-
-        // Optional: Update author
-        if (bookDetails.getAuthor() != null) {
-            existingBook.setAuthor(bookDetails.getAuthor());
-        }
-
-        Book updatedBook = bookRepository.save(existingBook);
-        return ResponseEntity.ok(updatedBook);
-    }
-
-    // ✅ Delete Book
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
-        bookRepository.deleteById(id);
-        return ResponseEntity.ok("Book deleted successfully");
+    public ResponseEntity<BookDto> getBookById(@PathVariable Long id) {
+        return ResponseEntity.ok(bookService.getBookById(id));
     }
 }

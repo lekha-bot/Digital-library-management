@@ -2,6 +2,7 @@ package com.example.librarysystem.service;
 
 import com.example.librarysystem.entity.Author;
 import com.example.librarysystem.repository.AuthorRepository;
+import com.example.librarysystem.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ public class AuthorService {
 
     @Autowired
     private AuthorRepository authorRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
 
     // Add Author
     public Author addAuthor(Author author) {
@@ -43,6 +47,17 @@ public class AuthorService {
 
     // Delete Author
     public void deleteAuthor(Long id) {
-        authorRepository.deleteById(id);
+        // Check if author exists
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Author not found with id: " + id));
+
+        // Check if books are linked to this author
+        if (!bookRepository.findByAuthorId(id).isEmpty()) {
+            throw new RuntimeException("Cannot delete author because books are linked. Delete books first.");
+        }
+
+        // Safe to delete
+        authorRepository.delete(author);
     }
-}
+    }
+

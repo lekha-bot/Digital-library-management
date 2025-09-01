@@ -1,22 +1,23 @@
 package com.example.librarysystem.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Resource {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     private String resourceType;
     private String resourceUrl;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
-    @JsonIgnoreProperties("resources")
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 }

@@ -16,8 +16,8 @@ public class Book {
     private String title;
     private String isbn;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id",nullable = false)
     @JsonIgnoreProperties("books")
     private Author author;
 

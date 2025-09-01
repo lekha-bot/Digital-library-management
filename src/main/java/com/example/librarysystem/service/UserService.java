@@ -1,44 +1,45 @@
 package com.example.librarysystem.service;
 
+import com.example.librarysystem.dto.UserDto;
 import com.example.librarysystem.entity.User;
 import com.example.librarysystem.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
-    // Create user
-    public User createUser(User user) {
-        // This will auto-generate ID (if you annotated @Id and @GeneratedValue in User entity)
-        return userRepository.save(user);
+    public UserDto saveUser(User user) {
+        User saved = userRepository.save(user);
+        return convertToDto(saved);
     }
 
-    // Get all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
-    // Get user by ID
-    public User getUserById(Long id) {
+    public UserDto getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .map(this::convertToDto)
+                .orElse(null);
     }
 
-    // Delete user by ID
-    public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
-    }
-
-    // Delete all users
-    public void deleteAllUsers() {
-        userRepository.deleteAll();
+    // ✅ conversion inside service
+    private UserDto convertToDto(User user) {
+        UserDto dto = new UserDto();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        return dto;
     }
 }

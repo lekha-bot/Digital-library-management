@@ -1,64 +1,75 @@
 package com.example.librarysystem.service;
 
+import com.example.librarysystem.dto.AuthorDto;
+import com.example.librarysystem.dto.BookDto;
+import com.example.librarysystem.entity.Author;
 import com.example.librarysystem.entity.Book;
-import com.example.librarysystem.entity.Resource;
+import com.example.librarysystem.repository.AuthorRepository;
 import com.example.librarysystem.repository.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
 
-    @Autowired
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
 
-    // ✅ Create / Save book (with resources)
-    public Book saveBook(Book book) {
-        if (book.getResources() != null) {
-            for (Resource resource : book.getResources()) {
-                resource.setBook(book); // link resource to book
-            }
+    public BookService(BookRepository bookRepository, AuthorRepository authorRepository) {
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+    }
+
+    // CREATE using BookDto (request contains author.id)
+    public BookDto createBook(BookDto request) {
+        Long authorId = (request.getAuthor() != null) ? request.getAuthor().getId() : null;
+        if (authorId == null) {
+            throw new IllegalArgumentException("author.id is required");
         }
-        return bookRepository.save(book);
+
+        Author author = authorRepository.findById(authorId)
+                .orElseThrow(() -> new IllegalArgumentException("Author not found with id: " + authorId));
+
+        Book book = new Book();
+        book.setTitle(request.getTitle());
+        book.setIsbn(request.getIsbn());
+        book.setAuthor(author);
+
+        Book saved = bookRepository.save(book);
+        return convertToDto(saved);
     }
 
-    // ✅ Get all books
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    // GET all
+    public List<BookDto> getAllBooks() {
+        return bookRepository.findAll().stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
-    // ✅ Get book by ID
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    // GET by id
+    public BookDto getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Book not found with id: " + id));
+        return convertToDto(book);
     }
 
-    // ✅ Update book by ID
-    public Optional<Book> updateBook(Long id, Book updatedBook) {
-        return bookRepository.findById(id).map(existingBook -> {
-            existingBook.setTitle(updatedBook.getTitle());
-            existingBook.setIsbn(updatedBook.getIsbn());
-            existingBook.setAuthor(updatedBook.getAuthor());
+    // convert Book entity → BookDto (NO resources)
+    private BookDto convertToDto(Book book) {
+        BookDto dto = new BookDto();
+        dto.setId(book.getId());
+        dto.setTitle(book.getTitle());
+        dto.setIsbn(book.getIsbn());
 
-            if (updatedBook.getResources() != null) {
-                for (Resource resource : updatedBook.getResources()) {
-                    resource.setBook(existingBook); // link new resources
-                }
-                existingBook.setResources(updatedBook.getResources());
-            }
-
-            return bookRepository.save(existingBook);
-        });
-    }
-
-    // ✅ Delete book by ID
-    public boolean deleteBook(Long id) {
-        if (bookRepository.existsById(id)) {
-            bookRepository.deleteById(id);
-            return true;
+        Author author = book.getAuthor();
+        if (author != null) {
+            AuthorDto ad = new AuthorDto();
+            ad.setId(author.getId());
+            ad.setName(author.getName());
+            ad.setBiography(author.getBiography());
+            dto.setAuthor(ad);
         }
-        return false;
+        return dto;
     }
 }
